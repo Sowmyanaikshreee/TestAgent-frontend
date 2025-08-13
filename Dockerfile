@@ -1,20 +1,18 @@
-# Use an official Python runtime as a parent image
+# Use official Python base image
 FROM python:3.10
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y libgl1-mesa-glx
-
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container
-COPY . /app
-
-# Install Python dependencies
+# Copy requirements and install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose FastAPI port
-EXPOSE 8000
+# Copy the rest of the app
+COPY . .
 
-# Run the FastAPI application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Expose port 8001
+EXPOSE 8001
+
+# Command to run your app (adjust if your main.py needs extra args)
+CMD ["python", "main.py", "--port", "8001", "--host", "0.0.0.0"]
