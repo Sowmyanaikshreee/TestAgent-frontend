@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teacher Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fa;
+    }
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #4a9bd8, #66c2ff);
+      padding: 12px 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .logo img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 4px;
+    }
+    .nav-links a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 2px;
+      background: white;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-nav {
+      background: white;
+      color: #4a9bd8;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    .btn-nav:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+    .main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 20px;
+      margin-top: 70px;
+    }
+    .register-box {
+      background: #fff;
+      padding: 30px 40px 10px 40px; /* top, right, bottom, left */
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #4a90e2;
+    }
+ 
+ 
+    .register-box h2 {
+      margin-top: 0;
+      margin-bottom: 24px; /* Good breathing room */
+      text-align: center;
+      font-size: 26px;
+      color: #222;
+    }
+ 
+ 
+ 
+    .form-group {
+      margin-bottom: 26px;
+      position: relative;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #333;
+      font-size: 15px;
+    }
+    .input-icon {
+      position: absolute;
+      top: 42px;
+      left: 14px;
+      color: #999;
+      font-size: 14px;
+    }
+    .validation-icon {
+      position: absolute;
+      top: 42px;
+      right: 14px;
+      font-size: 16px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 40px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      transition: border-color 0.2s ease-in-out;
+      background-color: white;
+      box-sizing: border-box;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #4a90e2;
+      outline: none;
+      background-color: #f9fbff;
+    }
+   .btn {
+      background: white;
+      color: #4a9bd8;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+ 
+    .btn:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+    .message {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+    @media (max-width: 600px) {
+      .register-box {
+        padding: 30px 20px;
+      }
+    }
+    .signup {
+      margin-top: 7px;
+      margin-bottom: 0;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
+ 
+      .signup a {
+        color: #4a90e2;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .button-wrapper {
+      text-align: center;
+      margin-top: 20px;
+    }
+ 
+    .button-wrapper .btn {
+      display: inline-block;
+    }
+
+    .modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 30px 20px;
+  border: 1px solid #888;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.4s ease;
+}
+
+.modal-icon {
+  font-size: 48px;
+  color: #2ecc71;
+  margin-bottom: 10px;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(-20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+ 
+ 
+  </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+ 
+  <header class="navbar">
+    <div class="logo">
+      <img src="images/Aibot 1.jpg" alt="Bot Logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" data-key="home">Home</a>
+      <a href="index.html#features" data-key="about">About</a>
+      <a href="index.html#contact" data-key="contact">Contact Us</a>
+    </nav>
+    <div class="buttons">
+      <a href="admin_login.html" class="btn"><i class="fas fa-user-shield"></i> <span data-key="admin">Admin</span></a>
+      <a href="user_login.html" class="btn"><i class="fas fa-user-graduate"></i> <span data-key="user">User</span></a>
+    </div>
+  </header>
+ 
+  <div class="main">
+    <div class="register-box">
+      <h2 data-key="register-title">Teacher Registration</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name" data-key="label-name">Full Name</label>
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" id="name" required data-key-placeholder="name-placeholder" />
+          <span class="validation-icon" id="name-icon"></span>
+        </div>
+        <div class="form-group">
+          <label for="email" data-key="label-email">Email ID</label>
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="email" required data-key-placeholder="email-placeholder"/>
+          <span class="validation-icon" id="email-icon"></span>
+        </div>
+        <div class="form-group">
+          <label for="password" data-key="label-password">Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="password" required data-key-placeholder="password-placeholder"/>
+          <div id="passwordHint" style="font-size: 13px; color: #888; margin-top: 5px;">
+            Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol.
+          </div>
+          <div id="passwordStrength" style="margin-top: 5px; font-size: 13px;"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirm" data-key="label-confirm">Re-type Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="confirm" required data-key-placeholder="confirm-placeholder" />
+        </div>
+        <div class="form-group">
+          <label for="grade" data-key="label-grade">Class/Grade</label>
+          <i class="fas fa-layer-group input-icon"></i>
+          <select id="grade" required>
+            <option value="">Select Grade</option>
+            <option value="1">Grade 1</option>
+            <option value="2">Grade 2</option>
+            <option value="3">Grade 3</option>
+            <option value="4">Grade 4</option>
+            <option value="5">Grade 5</option>
+            <option value="6">Grade 6</option>
+            <option value="7">Grade 7</option>
+            <option value="8">Grade 8</option>
+            <option value="9">Grade 9</option>
+            <option value="10">Grade 10</option>
+            <option value="11">Grade 11</option>
+            <option value="12">Grade 12</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="subject" data-key="label-subject">Subject</label>
+          <i class="fas fa-book input-icon"></i>
+          <select id="subject" required>
+            <option value="">Select Subject</option>
+            <option value="Maths">Maths</option>
+            <option value="Science">Science</option>
+            <option value="ComputerScience">Computer</option>
+          </select>
+        </div>
+
+        <div class="g-recaptcha" data-sitekey="6LckAoYrAAAAAGHtU679PK6naKKA-6KVbhTWoIUv"></div><br>
+
+        <div class="button-wrapper">
+          <button type="submit" class="btn" data-key="register-btn">Register</button>
+        </div>
+
+        
+      </form><br>
+ 
+    <div class="signup">
+      <span data-key="already-text">Already registered?</span> <a href="user_login.html" data-key="login-link">Log in</a>
+    </div>
+    <div class="message" id="message"></div>
+  </div>
+
+  <!-- Success Modal -->
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h2>Registration Successful</h2>
+    <p>Redirecting to login page...</p>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div id="errorModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-icon" style="color: #e74c3c;">
+      <i class="fas fa-times-circle"></i>
+    </div>
+    <h2>Registration Failed</h2>
+    <p id="errorMessage">Something went wrong.</p>
+  </div>
+</div>
+
+  <!-- CAPTCHA Warning Modal -->
+<div id="captchaModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-icon" style="color: #f39c12;">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h2>CAPTCHA Required</h2>
+    <p>Please complete the CAPTCHA before signing in.</p>
+  </div>
+</div>
+
+ 
+<script>
+  function validateName(name) {
+    return name.length >= 2;
+  }
+ 
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+ 
+  function checkPasswordStrength(password) {
+    const strengthEl = document.getElementById("passwordStrength");
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&^])[A-Za-z\d@$!%*?#&^]{8,}$/;
+ 
+    if (!password) {
+      strengthEl.textContent = "";
+      return;
+    }
+ 
+    if (strongRegex.test(password)) {
+      strengthEl.style.color = "green";
+      strengthEl.textContent = "✅ Strong password";
+    } else {
+      strengthEl.style.color = "red";
+      strengthEl.textContent = "❌ Weak password. Include uppercase, lowercase, number, and symbol.";
+    }
+  }
+ 
+  document.getElementById("name").addEventListener("input", function () {
+    const icon = document.getElementById("name-icon");
+    icon.innerHTML = validateName(this.value) ? '✅' : '❌';
+  });
+ 
+  document.getElementById("email").addEventListener("input", function () {
+    const icon = document.getElementById("email-icon");
+    icon.innerHTML = validateEmail(this.value) ? '✅' : '❌';
+  });
+ 
+  document.getElementById("password").addEventListener("input", function () {
+    checkPasswordStrength(this.value);
+  });
+ 
+  document.getElementById("registerForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  const grade = document.getElementById("grade").value;
+  const subject = document.getElementById("subject").value;
+  const captchaResponse = grecaptcha.getResponse(); // ✅
+
+  if (!captchaResponse) {
+      document.getElementById("captchaModal").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("captchaModal").style.display = "none";
+      }, 2000);
+      return;
+    }
+
+  if (password !== confirm) {
+    alert("❌ Passwords do not match!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("password", password);
+  formData.append("grade", grade);
+  formData.append("subject", subject);
+  formData.append("g-recaptcha-response", captchaResponse); // ✅
+
+  try {
+    const res = await fetch("https://kbuddy.ai/api/register_teacher/", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById("successModal").style.display = "block";
+      setTimeout(function () {
+        window.location.href = "user_login.html";
+      }, 1500);
+    } else {
+      document.getElementById("errorMessage").innerText = data.message || "Registration failed.";
+      document.getElementById("errorModal").style.display = "block";
+      setTimeout(function () {
+        document.getElementById("errorModal").style.display = "none";
+      }, 2000);
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById("errorMessage").innerText = "Failed to connect to the server.";
+    document.getElementById("errorModal").style.display = "block";
+    setTimeout(function () {
+      document.getElementById("errorModal").style.display = "none";
+    }, 2000);
+  }
+});
+
+
+</script>
+ 
+<script>
+const translations = {
+  en: {
+    "admin": "Admin", "user": "User",
+     "home": "Home",
+    "register-title": "Teacher Registration",
+    "label-name": "Full Name",
+    "label-email": "Email ID",
+    "label-password": "Password",
+    "label-confirm": "Re-type Password",
+    "label-grade": "Class/Grade",
+    "label-subject": "Subject",
+    "register-btn": "Register",
+    "already-text": "Already registered?",
+    "login-link": "Log in",
+    "name-placeholder": "Full Name",
+    "email-placeholder": "Email",
+    "password-placeholder": "Password",
+    "confirm-placeholder": "Re-type Password"
+  },
+  kn: {
+    "admin": "ನಿರ್ವಾಹಕ", "user": "ಬಳಕೆದಾರ",
+    "home": "ಮುಖಪುಟ","about": "ಬಗ್ಗೆ",
+    "contact": "ಸಂಪರ್ಕಿಸಿ",
+    "register-title": "ಶಿಕ್ಷಕ ನೋಂದಣಿ",
+    "label-name": "ಪೂರ್ಣ ಹೆಸರು",
+    "label-email": "ಇಮೇಲ್ ಐಡಿ",
+    "label-password": "ಪಾಸ್ವರ್ಡ್",
+    "label-confirm": "ಪಾಸ್ವರ್ಡ್ ಮತ್ತೆ ಟೈಪ್ ಮಾಡಿ",
+    "label-grade": "ವರ್ಗ/ಗ್ರೇಡ್",
+    "label-subject": "ವಿಷಯ",
+    "register-btn": "ನೋಂದಣಿ",
+    "already-text": "ಈಗಾಗಲೇ ನೋಂದಾಯಿತ?",
+    "login-link": "ಲಾಗಿನ್",
+    "name-placeholder": "ಪೂರ್ಣ ಹೆಸರು",
+    "email-placeholder": "ಇಮೇಲ್",
+    "password-placeholder": "ಪಾಸ್ವರ್ಡ್",
+    "confirm-placeholder": "ಪಾಸ್ವರ್ಡ್ ಮತ್ತೆ ನಮೂದಿಸಿ"
+  },
+  hi: {
+    "home": "होम", "admin": "प्रशासक", "user": "उपयोगकर्ता",
+    "register-title": "शिक्षक पंजीकरण","about": "परिचय",
+    "contact": "संपर्क करें",
+    "label-name": "पूरा नाम",
+    "label-email": "ईमेल आईडी",
+    "label-password": "पासवर्ड",
+    "label-confirm": "पासवर्ड पुनः दर्ज करें",
+    "label-grade": "कक्षा/ग्रेड",
+    "label-subject": "विषय",
+    "register-btn": "पंजीकरण करें",
+    "already-text": "पहले से पंजीकृत?",
+    "login-link": "लॉगिन",
+    "name-placeholder": "पूरा नाम",
+    "email-placeholder": "ईमेल",
+    "password-placeholder": "पासवर्ड",
+    "confirm-placeholder": "पासवर्ड पुनः दर्ज करें"
+  },
+  ml: {
+    "home": "ഹോം", "admin": "അഡ്മിൻ", "user": "ഉപയോക്താവ്",
+    "register-title": "അധ്യാപക രജിസ്ട്രേഷൻ","about": "കുറിച്ച്",
+    "contact": "ബന്ധപ്പെടുക",
+    "label-name": "പൂർണ്ണ പേര്",
+    "label-email": "ഇമെയിൽ ഐഡി",
+    "label-password": "പാസ്വേഡ്",
+    "label-confirm": "പാസ്വേഡ് വീണ്ടും നൽകുക",
+    "label-grade": "ക്ലാസ്സ്/ഗ്രേഡ്",
+    "label-subject": "വിഷയം",
+    "register-btn": "രജിസ്റ്റർ ചെയ്യുക",
+    "already-text": "ഇതിനകം രജിസ്റ്റർ ചെയ്തിട്ടുണ്ടോ?",
+    "login-link": "ലോഗിൻ",
+    "name-placeholder": "പൂർണ്ണ പേര്",
+    "email-placeholder": "ഇമെയിൽ",
+    "password-placeholder": "പാസ്വേഡ്",
+    "confirm-placeholder": "പാസ്വേഡ് വീണ്ടും നൽകുക"
+  }
+};
+ 
+document.addEventListener("DOMContentLoaded", function () {
+  const savedLang = localStorage.getItem("selectedLanguage") || "en";
+ 
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (translations[savedLang] && translations[savedLang][key]) {
+      el.innerHTML = translations[savedLang][key];
+    }
+  });
+ 
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    if (translations[savedLang] && translations[savedLang][key]) {
+      el.placeholder = translations[savedLang][key];
+    }
+  });
+});
+</script>
+ 
+ 
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fa;
+    }
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #4a9bd8, #66c2ff);
+      padding: 12px 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .logo img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 4px;
+    }
+    .nav-links a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 2px;
+      background: white;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      background: white;
+      color: #4a9bd8;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 250px;
+      height: calc(100vh - 80px);
+      background: #012141;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar.collapsed {
+      width: 70px;
+    }
+    .sidebar .menu-item {
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .sidebar .menu-item:hover {
+      background: #064663;
+    }
+    .sidebar .menu-item.active {
+      background: #0a6b9c;
+    }
+    .sidebar.collapsed .menu-item span {
+      display: none;
+    }
+    .sidebar-toggle-wrapper {
+      margin-top: auto;
+      padding: 20px;
+    }
+    .toggle-btn {
+      width: 100%;
+      background: #012141;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+    .toggle-btn:hover {
+      background: #064663;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-top: 100px;
+      margin-left: 250px;
+      padding: 30px;
+      transition: margin-left 0.3s ease;
+    }
+    .sidebar.collapsed ~ .main-content {
+      margin-left: 70px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #012141;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background: #4a9bd8;
+      color: white;
+    }
+    tr:hover {
+      background: #f9fbff;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      width: 300px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background: linear-gradient(135deg, #4a9bd8, #66c2ff);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 8px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="images/Aibot 1.jpg" alt="Bot Logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" data-key="home">Home</a>
+      <a href="index.html#features" data-key="about">About</a>
+      <a href="index.html#contact" data-key="contact">Contact Us</a>
+    </nav>
+    <div class="buttons">
+      <a href="admin_login.html" class="btn"><i class="fas fa-user-shield"></i> <span data-key="admin">Admin</span></a>
+      <a href="user_login.html" class="btn"><i class="fas fa-user-graduate"></i> <span data-key="user">User</span></a>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <a href="upload.html" class="menu-item"><i class="fas fa-file-upload"></i> <span data-key="upload-files">Upload Files</span></a>
+    <a href="admin_list.html" class="menu-item active"><i class="fas fa-user-shield"></i> <span data-key="list-admin">List Admin</span></a>
+    <a href="teacher_list.html" class="menu-item"><i class="fas fa-user-graduate"></i> <span data-key="list-teacher">List Teacher</span></a>
+
+    <div class="sidebar-toggle-wrapper">
+      <button class="toggle-btn" id="toggleBtn"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="container">
+      <h2><i class="fas fa-user-shield" style="color: #4a9bd8; margin-right: 8px;"></i><span data-key="admin-list-title">Admin List</span></h2>
+
+      <table id="adminTable">
+      <thead>
+        <tr>
+          <th data-key="id">ID</th>
+          <th data-key="name">Name</th>
+          <th data-key="email">Email</th>
+          <th data-key="actions">Actions</th>
+        </tr>
+      </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="updateModal" class="modal">
+    <div class="modal-content">
+        <h3 data-key="update-admin">Update Admin</h3>
+        <input id="updName" placeholder="Name" data-key-placeholder="name-placeholder" />
+        <input id="updEmail" placeholder="Email" data-key-placeholder="email-placeholder" disabled />
+        <button onclick="submitUpdate()" data-key="submit">Submit</button>
+        <button onclick="closeModal()" style="background: #ccc; color: #333;" data-key="cancel">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.getElementById("toggleBtn");
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+    });
+
+    async function fetchAdmins() {
+      const res = await fetch("https://kbuddy.ai/api/list_users?role=admin");
+      const admins = await res.json();
+      const tbody = document.querySelector("#adminTable tbody");
+      tbody.innerHTML = "";
+      admins.forEach(a => {
+        const row = `
+          <tr>
+            <td>${a.id}</td>
+            <td>${a.name}</td>
+            <td>${a.email}</td>
+            <td>
+              <button onclick="deleteAdmin('${a.id}')"><i class="fas fa-trash"></i></button>
+              <button onclick="openUpdateModal('${a.id}', '${a.name}', '${a.email}')"><i class="fas fa-edit"></i></button>
+            </td>
+          </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    async function deleteAdmin(id) {
+      const form = new FormData();
+      form.append("id", id);
+      await fetch("https://kbuddy.ai/api/delete_user/", { method: "POST", body: form });
+      fetchAdmins();
+    }
+
+    function openUpdateModal(id, name, email) {
+      document.getElementById("updId").value = id;
+      document.getElementById("updName").value = name;
+      document.getElementById("updEmail").value = email;
+      document.getElementById("updateModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("updateModal").style.display = "none";
+    }
+
+    function submitUpdate() {
+      const id = document.getElementById("updId").value;
+      const metadata = {
+        role: "admin",
+        name: document.getElementById("updName").value,
+        email: document.getElementById("updEmail").value
+      };
+      fetch("https://kbuddy.ai/api/update_user/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, metadata })
+      }).then(() => {
+        closeModal();
+        fetchAdmins();
+      });
+    }
+
+    window.onload = fetchAdmins;
+
+    const translations = {
+  en: {
+    "home": "Home", "about": "About", "contact": "Contact Us",
+    "admin": "Admin", "user": "User",
+    "list-admin": "List Admin",
+    "list-teacher": "List Teacher",
+    "upload-files": "Upload Files",
+    "admin-list-title": "Admin List",
+    "update-admin": "Update Admin",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "name-placeholder": "Name",
+    "email-placeholder": "Email",    "id": "ID",
+    "name": "Name",
+    "email": "Email",
+    "actions": "Actions"
+  },
+  kn: {
+    "home": "ಮುಖಪುಟ", "about": "ಬಗ್ಗೆ", "contact": "ಸಂಪರ್ಕಿಸಿ",
+    "admin": "ನಿರ್ವಾಹಕ", "user": "ಬಳಕೆದಾರ",
+    "list-admin": "ನಿರ್ವಾಹಕರ ಪಟ್ಟಿ",
+    "list-teacher": "ಬೋಧಕರ ಪಟ್ಟಿ",
+    "upload-files": "ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+    "admin-list-title": "ನಿರ್ವಾಹಕರ ಪಟ್ಟಿ",
+    "update-admin": "ನಿರ್ವಾಹಕ ನವೀಕರಿಸಿ",
+    "submit": "ಸಲ್ಲಿಸು",
+    "cancel": "ರದ್ದುಮಾಡು",
+    "name-placeholder": "ಹೆಸರು",
+    "email-placeholder": "ಇಮೇಲ್",     "id": "ಐಡಿ",
+    "name": "ಹೆಸರು",
+    "email": "ಇಮೇಲ್",
+    "actions": "ಕ್ರಿಯೆಗಳು"
+  },
+  hi: {
+    "home": "होम", "about": "परिचय", "contact": "संपर्क करें",
+    "admin": "प्रशासक", "user": "उपयोगकर्ता",
+    "list-admin": "प्रशासक सूची",
+    "list-teacher": "शिक्षक सूची",
+    "upload-files": "फ़ाइलें अपलोड करें",
+    "admin-list-title": "प्रशासक सूची",
+    "update-admin": "प्रशासक अपडेट करें",
+    "submit": "सबमिट करें",
+    "cancel": "रद्द करें",
+    "name-placeholder": "नाम",
+    "email-placeholder": "ईमेल",     "id": "आईडी",
+    "name": "नाम",
+    "email": "ईमेल",
+    "actions": "क्रियाएँ"
+  },
+  ml: {
+    "home": "ഹോം", "about": "കുറിച്ച്", "contact": "ബന്ധപ്പെടുക",
+    "admin": "അഡ്മിൻ", "user": "ഉപയോക്താവ്",
+    "list-admin": "അഡ്മിൻ ലിസ്റ്റ്",
+    "list-teacher": "അധ്യാപകരുടെ ലിസ്റ്റ്",
+    "upload-files": "ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുക",
+    "admin-list-title": "അഡ്മിൻ ലിസ്റ്റ്",
+    "update-admin": "അഡ്മിൻ അപ്‌ഡേറ്റ് ചെയ്യുക",
+    "submit": "സമർപ്പിക്കുക",
+    "cancel": "റദ്ദാക്കുക",
+    "name-placeholder": "പേര്",
+    "email-placeholder": "ഇമെയിൽ",     "id": "ഐഡി",
+    "name": "പേര്",
+    "email": "ഇമെയിൽ",
+    "actions": "നടപടികൾ"
+  }
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+  const savedLang = localStorage.getItem("selectedLanguage") || "en";
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (translations[savedLang] && translations[savedLang][key]) {
+      el.innerHTML = translations[savedLang][key];
+    }
+  });
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    if (translations[savedLang] && translations[savedLang][key]) {
+      el.placeholder = translations[savedLang][key];
+    }
+  });
+});
+
+  </script>
+</body>
+</html>

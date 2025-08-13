@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload PDFs by Category</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fa;
+      overflow: hidden;
+    }
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #4a9bd8, #66c2ff);
+      padding: 12px 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .logo img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 4px;
+    }
+    .nav-links a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 2px;
+      background: white;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      background: white;
+      color: #4a9bd8;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 250px;
+      height: calc(100vh - 80px);
+      background: #012141;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar.collapsed {
+      width: 70px;
+    }
+    .sidebar .menu-item {
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .sidebar .menu-item:hover {
+      background: #064663;
+    }
+    .sidebar .menu-item.active {
+      background: #0a6b9c;
+    }
+    .sidebar.collapsed .menu-item span {
+      display: none;
+    }
+    .sidebar-toggle-wrapper {
+      margin-top: auto;
+      padding: 20px;
+    }
+    .toggle-btn {
+      width: 100%;
+      background: #012141;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+    .toggle-btn:hover {
+      background: #064663;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 250px;
+      margin-top: 100px;
+      padding: 30px;
+      transition: margin-left 0.3s ease;
+    }
+    .sidebar.collapsed ~ .main-content {
+      margin-left: 70px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #012141;
+      margin-bottom: 30px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 20px 0 8px;
+      color: #2c3e50;
+    }
+    select, input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #4a9bd8, #66c2ff);
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .category-section {
+      margin-bottom: 25px;
+      background: #f9fbfd;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .category-section h4 {
+      margin-bottom: 12px;
+      color: #012141;
+    }
+    ul.file-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li.file-entry {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .file-entry a {
+      display: flex;
+      align-items: center;
+      color: #1d4ed8;
+      font-weight: 500;
+      text-decoration: none;
+      gap: 8px;
+    }
+    .delete-btn {
+      width: 32px;
+      height: 32px;
+      background: #ff6b6b;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delete-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Modal styles */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .modal-content {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      animation: fadeInScale 0.3s ease forwards;
+      text-align: center;
+    }
+    .modal-content button {
+      margin: 10px 5px 0;
+      padding: 10px 20px;
+      background: #4a9bd8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .modal-content button:hover {
+      background: #66c2ff;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-content button#confirmYes,
+.modal-content button.cancel-btn {
+  width: 60px;      /* Smaller width */
+  height: 30px;     /* Smaller height */
+  font-size: 12px;
+  border-radius: 5px;
+  margin: 10px 4px 0;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.modal-content button#confirmYes {
+  background: #28a745; /* Green */
+  color: white;
+}
+
+.modal-content button#confirmYes:hover {
+  background: #218838;
+}
+
+.modal-content button.cancel-btn {
+  background: #dc3545; /* Red */
+  color: white;
+}
+
+.modal-content button.cancel-btn:hover {
+  background: #c82333;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo"><img src="images/Aibot 1.jpg" alt="Bot Logo" /></div>
+    <nav class="nav-links">
+      <a href="index.html" data-key="home">Home</a>
+      <a href="index.html#features" data-key="about">About</a>
+      <a href="index.html#contact" data-key="contact">Contact Us</a>
+    </nav>
+    <div class="buttons">
+      <a href="admin_login.html" class="btn"><i class="fas fa-user-shield"></i><span data-key="admin">Admin</span></a>
+      <a href="user_login.html" class="btn"><i class="fas fa-user-graduate"></i><span data-key="user">User</span></a>
+    </div>
+  </header>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <a href="upload.html" class="menu-item active" ><i class="fas fa-file-upload"></i> <span data-key="upload-files">Upload Files</span></a>
+    <a href="admin_list.html" class="menu-item" ><i class="fas fa-user-shield"></i> <span data-key="list-admin">List Admin</span></a>
+    <a href="teacher_list.html" class="menu-item" ><i class="fas fa-user-graduate"></i> <span data-key="list-teacher">List Teacher</span></a>
+
+    <div class="sidebar-toggle-wrapper"><button class="toggle-btn" id="toggleBtn"><i class="fas fa-bars"></i></button></div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="container">
+      <h2 data-key="upload-title"><i class="fas fa-file-upload" style="color: #667eea; margin-right: 10px;"></i>Upload PDF by Class</h2>
+
+      <label for="classSelect">Select Category:</label>
+      <select id="classSelect">
+        <option value="">-- Select Class --</option>
+        <option value="class_1">Class 1</option>
+        <option value="class_2">Class 2</option>
+        <option value="class_3">Class 3</option>
+        <option value="class_4">Class 4</option>
+        <option value="class_5">Class 5</option>
+        <option value="class_6">Class 6</option>
+        <option value="class_7">Class 7</option>
+        <option value="class_8">Class 8</option>
+        <option value="class_9">Class 9</option>
+        <option value="class_10">Class 10</option>
+        <option value="class_11">Class 11</option>
+        <option value="class_12">Class 12</option>
+      </select>
+
+      <label for="subjectSelect"  data-key="select-subject">Select Subject:</label>
+      <select id="subjectSelect">
+        <option value="">-- Select Subject --</option>
+        <option value="Maths">Maths</option>
+        <option value="Science">Science</option>
+        <option value="ComputerScience">Computer Science</option>
+      </select>
+
+      <label for="pdfFile" data-key="choose-pdf">Choose PDF File:</label>
+      <input type="file" id="pdfFile" accept=".pdf" />
+      <button id="uploadBtn" data-key="upload-btn">📤 Upload PDF</button>
+
+      <h3 data-key="uploaded-docs" ><i class="fas fa-folder-open" style="color: #667eea; margin-right: 10px;"></i>Uploaded Documents</h3>
+      <div style="display: flex; gap: 20px; align-items: flex-start;">
+        <div style="flex: 1;">
+          <label for="filterClass" data-key="filter-class">Filter by Class:</label>
+          <select id="filterClass" onchange="filterFiles()">
+            <option value="">-- All Classes --</option>
+            <option value="class_1">Class 1</option>
+            <option value="class_2">Class 2</option>
+            <option value="class_3">Class 3</option>
+            <option value="class_4">Class 4</option>
+            <option value="class_5">Class 5</option>
+            <option value="class_6">Class 6</option>
+            <option value="class_7">Class 7</option>
+            <option value="class_8">Class 8</option>
+            <option value="class_9">Class 9</option>
+            <option value="class_10">Class 10</option>
+            <option value="class_11">Class 11</option>
+            <option value="class_12">Class 12</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <label for="filterSubject" data-key="filter-subject">Filter by Subject:</label>
+          <select id="filterSubject" onchange="filterFiles()">
+            <option value="">-- All Subjects --</option>
+            <option value="Maths">Maths</option>
+            <option value="Science">Science</option>
+            <option value="ComputerScience">Computer Science</option>
+          </select>
+        </div>
+      </div>
+      <div id="fileList">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Modal HTML -->
+  <div id="confirmModal" class="modal-backdrop">
+  <div class="modal-content">
+    <h3 id="confirmMessage">Are you sure?</h3>
+    <button id="confirmYes">Yes</button>
+    <button class="cancel-btn" onclick="closeConfirmModal()">No</button>
+  </div>
+</div>
+
+  <div id="infoModal" class="modal-backdrop">
+    <div class="modal-content">
+      <h3 id="infoMessage">Message here</h3>
+      <button onclick="closeInfoModal()">OK</button>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.getElementById("toggleBtn");
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+    });
+
+    function showInfoModal(message) {
+      document.getElementById("infoMessage").innerText = message;
+      document.getElementById("infoModal").style.display = "flex";
+    }
+    function closeInfoModal() {
+      document.getElementById("infoModal").style.display = "none";
+    }
+    let confirmAction = null;
+    function showConfirmModal(message, onConfirm) {
+      document.getElementById("confirmMessage").innerText = message;
+      document.getElementById("confirmModal").style.display = "flex";
+      confirmAction = onConfirm;
+    }
+    function closeConfirmModal() {
+      document.getElementById("confirmModal").style.display = "none";
+      confirmAction = null;
+    }
+    document.getElementById("confirmYes").addEventListener("click", function () {
+      if (confirmAction) confirmAction();
+      closeConfirmModal();
+    });
+
+    async function uploadFile() {
+      const fileInput = document.getElementById("pdfFile");
+      const classVal = document.getElementById("classSelect").value;
+      const subjectVal = document.getElementById("subjectSelect").value;
+      const uploadBtn = document.getElementById("uploadBtn");
+
+      if (!fileInput || fileInput.files.length === 0) {
+        showInfoModal("Please select a file.");
+        return;
+      }
+      if (!classVal || !subjectVal) {
+        showInfoModal("Please select both class and subject.");
+        return;
+      }
+
+      const folderKey = `${classVal}/${subjectVal}`;
+      uploadBtn.innerHTML = "Uploading...";
+      uploadBtn.disabled = true;
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("category", folderKey);
+
+      try {
+        const res = await fetch("https://kbuddy.ai/api/upload/", { method: "POST", body: formData });
+        const result = await res.json();
+        showInfoModal(result.message || "File uploaded successfully.");
+        fileInput.value = "";
+        fetchUploadedFiles();
+      } catch (err) {
+        showInfoModal("Uploading failed. Please try again.");
+      } finally {
+        uploadBtn.innerHTML = "📤 Upload PDF";
+        uploadBtn.disabled = false;
+      }
+    }
+
+    async function fetchUploadedFiles() {
+      const fileList = document.getElementById("fileList");
+      fileList.innerHTML = "Loading...";
+      try {
+        const res = await fetch("https://kbuddy.ai/api/uploaded_files/");
+        const data = await res.json();
+        fullFileData = data.files_by_category || {};
+        renderFilteredFiles();
+      } catch (err) {
+        fileList.innerHTML = "Error loading files.";
+      }
+    }
+
+    function filterFiles() {
+      renderFilteredFiles();
+    }
+    function renderFilteredFiles() {
+      const fileList = document.getElementById("fileList");
+      fileList.innerHTML = "";
+      const selectedClass = document.getElementById("filterClass").value;
+      const selectedSubject = document.getElementById("filterSubject").value;
+      const grouped = {};
+      for (const fullKey in fullFileData) {
+        const [classFolder, subjectFolder] = fullKey.split("/");
+        if (!grouped[classFolder]) grouped[classFolder] = {};
+        grouped[classFolder][subjectFolder] = fullFileData[fullKey];
+      }
+      for (const classKey in grouped) {
+        if (selectedClass && classKey !== selectedClass) continue;
+        for (const subjectKey in grouped[classKey]) {
+          if (selectedSubject && subjectKey !== selectedSubject) continue;
+          const section = document.createElement("div");
+          section.className = "category-section";
+          const title = document.createElement("h4");
+          title.innerText = `${classKey.toUpperCase()} / ${subjectKey}`;
+          section.appendChild(title);
+          const ul = document.createElement("ul");
+          ul.className = "file-list";
+          grouped[classKey][subjectKey].forEach(fileName => {
+            const li = document.createElement("li");
+            li.className = "file-entry";
+            const folderKey = `${classKey}/${subjectKey}`;
+            li.innerHTML = `
+              <a href="https://kbuddy.ai/api/files/${folderKey}/${encodeURIComponent(fileName)}" target="_blank">
+                <i class="fas fa-file-pdf"></i> ${fileName}
+              </a>
+              <button class="delete-btn" onclick="confirmDeleteFile('${fileName}', '${folderKey}')">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            `;
+            ul.appendChild(li);
+          });
+          section.appendChild(ul);
+          fileList.appendChild(section);
+        }
+      }
+    }
+
+    function confirmDeleteFile(filename, category) {
+      showConfirmModal(`Are you sure you want to delete "${filename}"?`, () => {
+        deleteFile(filename, category);
+      });
+    }
+
+    async function deleteFile(filename, category) {
+      try {
+        const res = await fetch(`https://kbuddy.ai/api/delete_file?filename=${encodeURIComponent(filename)}&category=${encodeURIComponent(category)}`, { method: "DELETE" });
+        const result = await res.json();
+        showInfoModal(result.message || "File deleted.");
+        fetchUploadedFiles();
+      } catch (err) {
+        showInfoModal("Delete failed. Please try again.");
+      }
+    }
+
+    let fullFileData = {};
+    document.getElementById("uploadBtn").addEventListener("click", uploadFile);
+    fetchUploadedFiles();
+  
+  const translations = {
+    en: {
+      "list-teacher": "List Teacher",
+      "list-admin": "List Admin",
+      "admin": "Admin", "user": "User",
+      "home": "Home",
+      "upload-title": "Upload PDF by Class",
+      "select-category": "Select Category:",
+      "select-subject": "Select Subject:",
+      "choose-pdf": "Choose PDF File:",
+      "upload-btn": "📤 Upload PDF",
+      "uploaded-docs": "Uploaded Documents",
+      "filter-class": "Filter by Class:",
+      "filter-subject": "Filter by Subject:",
+      "upload-files": "Upload Files"
+    },
+    kn: {
+      "list-teacher": "ಬಳಕೆದಾರರ ಪಟ್ಟಿ",
+      "list-admin": "ನಿರ್ವಾಹಕರ ಪಟ್ಟಿ",
+      "admin": "ನಿರ್ವಾಹಕ", "user": "ಬಳಕೆದಾರ",
+      "home": "ಮುಖಪುಟ", "about": "ಬಗ್ಗೆ",
+      "contact": "ಸಂಪರ್ಕಿಸಿ",
+      "upload-title": "ವರ್ಗದ ಪ್ರಕಾರ PDF ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+      "select-category": "ವರ್ಗವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:",
+      "select-subject": "ವಿಷಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:",
+      "choose-pdf": "PDF ಫೈಲ್ ಆಯ್ಕೆ ಮಾಡಿ:",
+      "upload-btn": "📤 PDF ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+      "uploaded-docs": "ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾದ ಡಾಕ್ಯುಮೆಂಟ್ಗಳು",
+      "filter-class": "ವರ್ಗದ ಪ್ರಕಾರ ಫಿಲ್ಟರ್ ಮಾಡಿ:","upload-files": "ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+      "filter-subject": "ವಿಷಯದ ಪ್ರಕಾರ ಫಿಲ್ಟರ್ ಮಾಡಿ:"
+    },
+    hi: {
+      "home": "होम", "admin": "प्रशासक", "user": "उपयोगकर्ता",
+      "upload-title": "कक्षा के अनुसार PDF अपलोड करें", "about": "परिचय",
+      "contact": "संपर्क करें",
+      "select-category": "श्रेणी चुनें:",
+      "select-subject": "विषय चुनें:",
+      "choose-pdf": "PDF फ़ाइल चुनें:",
+      "upload-btn": "📤 PDF अपलोड करें",
+      "uploaded-docs": "अपलोड किए गए दस्तावेज़",
+      "filter-class": "कक्षा के अनुसार फ़िल्टर करें:","list-admin": "प्रशासक सूची",
+      "list-teacher": "शिक्षक सूची",
+      "upload-files": "फ़ाइलें अपलोड करें",
+      "filter-subject": "विषय के अनुसार फ़िल्टर करें:"
+    },
+    ml: {
+      "home": "ഹോം", "admin": "അഡ്മിൻ", "user": "ഉപയോക്താവ്",
+      "upload-title": "ക്ലാസ്സ് പ്രകാരം PDF അപ്‌ലോഡ് ചെയ്യുക", "about": "കുറിച്ച്",
+      "contact": "ബന്ധപ്പെടുക",
+      "select-category": "വിഭാഗം തിരഞ്ഞെടുക്കുക:",
+      "select-subject": "വിഷയം തിരഞ്ഞെടുക്കുക:",
+      "choose-pdf": "PDF ഫയൽ തിരഞ്ഞെടുക്കുക:",
+      "upload-btn": "📤 PDF അപ്‌ലോഡ് ചെയ്യുക",
+      "uploaded-docs": "അപ്‌ലോഡ് ചെയ്ത ഡോക്യുമെന്റുകൾ",
+      "filter-class": "ക്ലാസ്സ് പ്രകാരം ഫിൽട്ടർ ചെയ്യുക:", "list-admin": "അഡ്മിൻ ലിസ്റ്റ്",
+      "list-teacher": "അധ്യാപകരുടെ ലിസ്റ്റ്",
+      "upload-files": "ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുക",
+      "filter-subject": "വിഷയം പ്രകാരം ഫിൽട്ടർ ചെയ്യുക:"
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const savedLang = localStorage.getItem("selectedLanguage") || "en";
+
+    document.querySelectorAll("[data-key]").forEach(el => {
+      const key = el.getAttribute("data-key");
+      if (translations[savedLang] && translations[savedLang][key]) {
+        el.innerHTML = translations[savedLang][key];
+      }
+    });
+  });
+</script>
+
+ 
+</body>
+</html>

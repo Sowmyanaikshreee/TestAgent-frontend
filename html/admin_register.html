@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fa;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #4a9bd8, #66c2ff);
+      padding: 12px 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 4px;
+    }
+
+    .nav-links a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 2px;
+      background: white;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      background: white;
+      color: #4a9bd8;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .btn-nav:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    .main {
+      display: flex;
+      flex-wrap: wrap;
+      height: calc(100vh - 100px);
+    }
+
+    .left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      padding: 30px;
+    }
+
+    .left img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f7fa;
+      padding: 30px;
+    }
+
+    .register-box {
+      background: #fff;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      border: 2px solid #4a90e2;
+      box-sizing: border-box;
+    }
+
+    .register-box h2 {
+      margin-bottom: 8px;
+      font-size: 24px;
+      color: #222;
+    }
+
+    .register-box p {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 36px 12px 36px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #4a90e2;
+    }
+
+    .form-group i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a90e2;
+      font-size: 16px;
+    }
+
+    .btn {
+      background: white;
+      color: #4a9bd8;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    .signup {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
+
+    .signup a {
+      color: #4a90e2;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left, .right {
+        flex: none;
+        width: 100%;
+      }
+
+      .register-box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">
+      <img src="images/Aibot 1.jpg" alt="Bot Logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" data-key="home">Home</a>
+      <a href="index.html#features" data-key="about">About</a>
+      <a href="index.html#contact" data-key="contact">Contact Us</a>
+    </nav>
+
+    <div class="buttons">
+      <a href="admin_login.html" class="btn"><i class="fas fa-user-shield"></i> <span data-key="admin">Admin</span></a>
+      <a href="user_login.html" class="btn"><i class="fas fa-user-graduate"></i> <span data-key="user">User</span></a>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="left">
+      <img src="images/admin.jpg" alt="Admin Illustration">
+    </div>
+    <div class="right">
+      <div class="register-box">
+        <form id="adminRegisterForm">
+          <h2 data-key="register-title">Admin Registration</h2>
+          <p data-key="register-subtitle">Create your admin account</p>
+          <div class="form-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="name" placeholder="Full Name" data-key-placeholder="name-placeholder" required>
+          </div>
+          <div class="form-group">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="Email" data-key-placeholder="email-placeholder" required>
+          </div>
+          <div class="form-group">
+            <i class="fas fa-key"></i>
+            <input type="password" id="password" placeholder="Password" data-key-placeholder="password-placeholder" required>
+          </div>
+          <div class="form-group">
+            <i class="fas fa-key"></i>
+            <input type="password" id="confirm" placeholder="Re-type Password" data-key-placeholder="retype-placeholder" required>
+          </div>
+          <button type="submit" class="btn" data-key="register-button">Register</button>
+        </form>
+        <div class="signup">
+          <span data-key="already-text">Already registered?</span> <a href="admin_login.html" data-key="login-link">Log in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("adminRegisterForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+
+      if (password !== confirm) {
+        alert("❌ Passwords do not match!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+
+      try {
+        const res = await fetch("https://kbuddy.ai/api/register_admin/", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("✅ Admin registered successfully!");
+          window.location.assign("admin_login.html");
+        } else {
+          alert("❌ " + (data.message || "Registration failed."));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("❌ Failed to connect to the server.");
+      }
+    });
+  </script>
+
+  <script>
+const translations = {
+  en: {
+    "admin": "Admin", "user": "User",
+     "home": "Home",
+    "register-title": "Admin Registration",
+    "register-subtitle": "Create your admin account",
+    "register-button": "Register",
+    "already-text": "Already registered?",
+    "login-link": "Log in",
+    "name-placeholder": "Full Name",
+    "email-placeholder": "Email",
+    "password-placeholder": "Password",
+    "retype-placeholder": "Re-type Password"
+  },
+  kn: {
+    "admin": "ನಿರ್ವಾಹಕ", "user": "ಬಳಕೆದಾರ",
+    "home": "ಮುಖಪುಟ","about": "ಬಗ್ಗೆ","contact": "ಸಂಪರ್ಕಿಸಿ",
+    "register-title": "ನಿರ್ವಾಹಕ ನೋಂದಣಿ",
+    "register-subtitle": "ನಿಮ್ಮ ನಿರ್ವಾಹಕ ಖಾತೆಯನ್ನು ರಚಿಸಿ",
+    "register-button": "ನೋಂದಣಿ",
+    "already-text": "ಈಗಾಗಲೇ ನೋಂದಾಯಿತ?",
+    "login-link": "ಲಾಗಿನ್",
+    "name-placeholder": "ಪೂರ್ಣ ಹೆಸರು",
+    "email-placeholder": "ಇಮೇಲ್",
+    "password-placeholder": "ಪಾಸ್ವರ್ಡ್",
+    "retype-placeholder": "ಮತ್ತೊಮ್ಮೆ ಪಾಸ್ವರ್ಡ್ ನಮೂದಿಸಿ"
+  },
+  hi: {
+    "home": "होम", "admin": "प्रशासक", "user": "उपयोगकर्ता",
+    "register-title": "प्रशासक पंजीकरण",
+    "register-subtitle": "अपना प्रशासक खाता बनाएं",
+    "register-button": "पंजीकरण करें",
+    "already-text": "पहले से पंजीकृत?",
+    "login-link": "लॉगिन",
+    "name-placeholder": "पूरा नाम",
+    "email-placeholder": "ईमेल",
+    "password-placeholder": "पासवर्ड",
+    "retype-placeholder": "पासवर्ड पुनः दर्ज करें"
+  },
+  ml: {
+    "home": "ഹോം", "admin": "അഡ്മിൻ", "user": "ഉപയോക്താവ്",
+    "register-title": "അഡ്മിൻ രജിസ്ട്രേഷൻ",
+    "register-subtitle": "നിങ്ങളുടെ അഡ്മിൻ അക്കൗണ്ട് സൃഷ്ടിക്കുക",
+    "register-button": "രജിസ്റ്റർ ചെയ്യുക",
+    "already-text": "ഇതിനകം രജിസ്റ്റർ ചെയ്തിട്ടുണ്ടോ?",
+    "login-link": "ലോഗിൻ",
+    "name-placeholder": "പൂർണ്ണ പേര്",
+    "email-placeholder": "ഇമെയിൽ",
+    "password-placeholder": "പാസ്വേഡ്",
+    "retype-placeholder": "പാസ്വേഡ് വീണ്ടും നൽകുക"
+  }
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+  const savedLang = localStorage.getItem("selectedLanguage") || "en";
+  
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (translations[savedLang] && translations[savedLang][key]) {
+      el.innerHTML = translations[savedLang][key];
+    }
+  });
+
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    if (translations[savedLang] && translations[savedLang][key]) {
+      el.placeholder = translations[savedLang][key];
+    }
+  });
+});
+</script>
+
+
+</body>
+</html>

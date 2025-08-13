@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fetch YouTube Link</title>
+</head>
+<body>
+
+  <h2>Fetch YouTube Link</h2>
+  <button onclick="fetchLink()">Get Link</button>
+  <div id="result"></div>
+
+  <script>
+    async function fetchLink() {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerText = "Fetching...";
+
+      try {
+        const res = await fetch("https://kbuddy.ai/api/real_youtube_links/?q=gIVE%20SOME%20VIDEO%20ABOUT%20PYTHON%20PROGRAMMING");
+        const data = await res.json();
+        resultDiv.innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultDiv.innerText = "❌ Failed to fetch the link.";
+        console.error(err);
+      }
+    }
+  </script>
+
+</body>
+</html>

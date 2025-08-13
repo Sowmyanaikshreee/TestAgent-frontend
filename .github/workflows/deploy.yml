@@ -1,0 +1,119 @@
+name: KARANJI FRONTEND container
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
+
+    steps:
+      - name: Checkout code with Git LFS
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up Git LFS
+        run: |
+          git lfs install
+          git lfs pull
+
+      - name: Set Commit Message Tag
+        id: set_tag
+        run: |
+          COMMIT_MESSAGE_TAG=$(echo "${{ github.event.head_commit.message }}" | tr -cd '[:alnum:]-_')
+          echo "Tag set to: ${COMMIT_MESSAGE_TAG}"
+          echo "::set-output name=tag::${COMMIT_MESSAGE_TAG}"
+
+      - name: Get Current Date and Time
+        id: current_datetime
+        run: |
+          CURRENT_DATETIME=$(date +"%Y-%m-%dT%H:%M:%S")
+          echo "::set-output name=datetime::${CURRENT_DATETIME}"
+
+      - name: Get Commit Author
+        id: commit_author
+        run: |
+          COMMIT_AUTHOR="${{ github.event.head_commit.author.name }}"
+          COMMIT_EMAIL="${{ github.event.head_commit.author.email }}"
+          echo "::set-output name=author::${COMMIT_AUTHOR}"
+          echo "::set-output name=email::${COMMIT_EMAIL}"
+
+      - name: Build The Docker Image
+        run: |
+          echo "Building Docker image with tag: themadrastechie/karanji-frontend:${{ steps.set_tag.outputs.tag }}"
+          docker build . \
+            --file Dockerfile \
+            --tag themadrastechie/karanji-frontend:${{ steps.set_tag.outputs.tag }} \
+            --build-arg APP_VERSION=${{ steps.set_tag.outputs.tag }} \
+            --build-arg BUILD_DATETIME=${{ steps.current_datetime.outputs.datetime }} \
+            --build-arg COMMIT_AUTHOR="${{ steps.commit_author.outputs.author }}" \
+            --build-arg COMMIT_EMAIL="${{ steps.commit_author.outputs.email }}" \
+            --progress=plain
+
+      - name: List Docker Images for Debugging
+        run: docker images
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker Image
+        id: docker_push
+        run: |
+          TAG=${{ steps.set_tag.outputs.tag }}
+          echo "Pushing Docker image with tag: $TAG"
+          docker push themadrastechie/karanji-frontend:${TAG}
+
+  deploy:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH Key
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > sundar_file.pem
+          chmod 600 sundar_file.pem
+
+      - name: Deploy Docker on Remote Server
+        env:
+          TAG: ${{ needs.build-and-publish.outputs.tag }}
+        run: |
+          echo "Deploying Docker image on remote server with tag: ${TAG}"
+          ssh -o StrictHostKeyChecking=no -i "sundar_file.pem" ubuntu@ec2-13-204-31-17.ap-south-1.compute.amazonaws.com << EOF
+            if [[ -z "${TAG}" ]]; then
+              echo "Error: TAG is empty. Exiting deployment."
+              exit 1
+            fi
+
+            sudo docker pull themadrastechie/karanji-frontend:${TAG}
+
+            if sudo docker ps -a --format '{{.Names}}' | grep -Eq '^karanji-frontend-container$'; then
+              echo "Stopping and removing existing container..."
+              sudo docker stop karanji-frontend-container
+              sudo docker rm karanji-frontend-container
+              echo "Removing associated image..."
+              IMAGE_ID=$(sudo docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep '^karanji-frontend' | awk '{print $2}')
+              if [ -n "$IMAGE_ID" ]; then
+                sudo docker rmi "$IMAGE_ID"
+              fi
+            fi
+
+            echo "Running new Docker container with tag: ${TAG}"
+            sudo docker run -d --name karanji-frontend-container -p 8001:8000 themadrastechie/karanji-frontend:${TAG}
+
+            echo "Removing all unused Docker images..."
+            sudo docker image prune -a -f
+
+            echo "Deployment completed successfully!"
+          EOF
